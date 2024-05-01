@@ -1,59 +1,86 @@
-import { useState } from "react";
+import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
 
-const CreateBlog = (props) => {
-    const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
+// Import a rich text editor like Draft.js or Quill
+const RichTextEditor = dynamic(() => import('react-quill'), { ssr: false });
+import 'react-quill/dist/quill.snow.css';
 
-    const handleTitleChange = (e) => {
-        setTitle(e.target.value);
-    };
+const CreateBlog = () => {
+  const [file, setFile] = useState(null);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
 
-    const handleContentChange = (e) => {
-        setContent(e.target.value);
-    };
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // You can perform actions like submitting the blog post here
-        // For example: props.onSubmit({ title, content });
-    };
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
+  };
 
-    return (
-        <div className="container mx-auto mt-10">
-            <form onSubmit={handleSubmit} className="max-w-md mx-auto bg-white p-8 rounded-md shadow-md">
-                <h2 className="text-2xl font-bold mb-4">Create Blog</h2>
-                <div className="mb-4">
-                    <label htmlFor="title" className="block text-gray-700 font-bold mb-2">Title</label>
-                    <input
-                        type="text"
-                        id="title"
-                        value={title}
-                        onChange={handleTitleChange}
-                        className="border border-gray-300 p-2 w-full rounded-md focus:outline-none focus:border-indigo-500"
-                        placeholder="Enter title"
-                    />
-                </div>
-                <div className="mb-4">
-                    <label htmlFor="content" className="block text-gray-700 font-bold mb-2">Content</label>
-                    <textarea
-                        id="content"
-                        value={content}
-                        onChange={handleContentChange}
-                        className="border border-gray-300 p-2 w-full rounded-md focus:outline-none focus:border-indigo-500 h-32 resize-none"
-                        placeholder="Enter content"
-                    />
-                </div>
-                <div className="text-center">
-                    <button
-                        type="submit"
-                        className="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 focus:outline-none focus:bg-indigo-600"
-                    >
-                        Create Blog
-                    </button>
-                </div>
-            </form>
+  const handleContentChange = (value) => {
+    setContent(value);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Perform form submission logic here
+    console.log('File:', file);
+    console.log('Title:', title);
+    console.log('Content:', content);
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <h1 className="text-3xl font-bold mb-7">Create Blog Post</h1>
+      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div className="mb-4">
+          <label className="block text-gray-700 font-bold mb-2" htmlFor="file">
+            Featured Image
+          </label>
+          <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="file"
+            type="file"
+            onChange={handleFileChange}
+          />
         </div>
-    );
+        <div className="mb-4">
+          <label className="block text-gray-700 font-bold mb-2" htmlFor="title">
+            Title
+          </label>
+          <input
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            id="title"
+            type="text"
+            placeholder="Enter blog title"
+            value={title}
+            onChange={handleTitleChange}
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-gray-700 font-bold mb-2" htmlFor="content">
+            Content
+          </label>
+          <div className="border rounded-md   min-h-[429px]">
+            <RichTextEditor
+              value={content}
+              onChange={handleContentChange}
+              className="h-96"
+            />
+          </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            type="submit"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  );
 };
 
 export default CreateBlog;
